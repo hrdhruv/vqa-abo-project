@@ -60,6 +60,50 @@ This project involves creating a **Visual Question Answering (VQA)** system usin
   - Minimize bias toward “True/False” or purely numerical answers
   - Ensure metadata was considered alongside image context for meaningful question generation
 
+#### 📄 Prompt Used for Gemini 2.0 API
+
+The following prompt was used to generate 3–7 single-word Q&A pairs from the image and associated metadata for each product. It was designed to satisfy constraints suitable for training multimodal VQA models like BLIP:
+
+```python
+prompt_text = (
+    f"Given this product image and its metadata:\n"
+    f"- Item Name: {item_name}\n"
+    f"- Keywords: {item_keywords}\n"
+    f"- Product Type: {product_type}\n"
+    f"- Material: {material}\n"
+    f"- Fabric Type: {fabric_type}\n"
+    f"- Pattern: {pattern}\n"
+    f"- Description: {product_description}\n"
+    f"- Brand: {brand}\n"
+    f"- Shape: {item_shape}\n"
+    f"- Color: {color}\n\n"
+    f"Generate between 3 and 7 high-quality question-answer pairs that are suitable for training a BLIP (Bootstrapped Language-Image Pretraining) model on Amazon-style e-commerce data.\n\n"
+    f"Important constraints:\n"
+    f"1. The answer to each question must be a single English word.\n"
+    f"2. Avoid yes/no, true/false, subjective, or numerical questions (e.g., price, size, quantity).\n"
+    f"3. Focus on visual or descriptive aspects (e.g., shape, texture, color, pattern, type, material, visible design features).\n"
+    f"4. If metadata is missing, rely solely on the image to generate relevant and grounded questions.\n\n"
+    f"Output format:\n"
+    f"Each line should contain one question and its answer, separated by ' / '. For example:\n"
+    f"What is the main color of the item? / Red\n"
+    f"What kind of pattern does the item have? / Striped"
+)
+
+prompt = {
+    "contents": [{
+        "parts": [
+            {"text": prompt_text},
+            {
+                "inline_data": {
+                    "mime_type": "image/jpeg",
+                    "data": image_base64
+                }
+            }
+        ]
+    }]
+}
+```
+
 
 ### 2. Baseline Evaluation
 
